@@ -2,11 +2,9 @@ import { BuildOptions, Plugin } from 'esbuild';
 const esbuild = require('esbuild-wasm');
 
 interface IESService {
+    init: boolean;
     build(string: string): Promise<void>;
 }
-
-//@ts-ignore
-const ESService: IESService = { build: null };
 
 const namespace = 'virtual';
 
@@ -86,8 +84,13 @@ export const esBuildConfig = (text: string): BuildOptions => ({
     write: false
 })
 
-esbuild.initialize({ wasmURL: 'esbuild.wasm' }).then(() => {
-    ESService.build = async (text: string) => {
+const ESService: IESService = {
+    init: false,
+    build: async function (text: string) {
+        if (!this.init) {
+            await esbuild.initialize({ wasmURL: 'esbuild.wasm' });
+            this.init = true;
+        }
         const data = await esbuild.build(esBuildConfig(text));
         data.outputFiles?.forEach((file: any) => {
             const _file = new File([file.text], `index.js`, { type: 'text/javascript' });
@@ -95,6 +98,6 @@ esbuild.initialize({ wasmURL: 'esbuild.wasm' }).then(() => {
             localStorage.setItem('script', url);
         });
     }
-});
+};
 
 export default ESService;
