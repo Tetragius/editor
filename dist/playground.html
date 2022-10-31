@@ -24,10 +24,25 @@
     window['react-router-dom'] = window.ReactRouterDOM;
     window['styled-components'] = window.styled;
 
+
+    window['resolver'] = (val) => window.parent.parent.postMessage(val, '*');
+
     const listener = (e) => {
         if (e.key === 'script') {
             try {
-                fetch(e.newValue).then(response => response.text()).then(eval).catch(console.log);
+                fetch(e.newValue)
+                    .then(response => response.text())
+                    .then(code => (eval(code), true))
+                    .then(() => {
+                        const un = exersizes.username;
+                        const res1 = exersizes.ex1();
+                        const res2 = exersizes.ex2();
+                        const res3 = exersizes.ex3();
+                        const raifhash = 65657;
+                        const val = '' + un + res1 + res2 + res3 + raifhash;
+                        console.log(val);
+                    })
+                    .catch(console.log);
             }
             catch { }
         }
