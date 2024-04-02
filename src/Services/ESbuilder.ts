@@ -45,24 +45,27 @@ export const pluginGlobalExternal = (): Plugin => {
 
             build.onResolve({ filter: /^([^\.\/]).*/ }, (args) => {
 
-                const external = build.initialOptions.external?.includes(args.path);
+                // const external = build.initialOptions.external?.includes(args.path);
 
-                if (external) {
-                    return {
-                        path: args.path,
-                        namespace: `node_modules:external`,
-                        pluginData: {
-                            ...args.pluginData,
-                            package: args.path,
-                        },
-                    };
-                }
+                // if (external) {
+                return {
+                    path: args.path,
+                    namespace: `node_modules:external`,
+                    pluginData: {
+                        ...args.pluginData,
+                        package: args.path,
+                    },
+                };
+                // }
 
             });
 
             build.onLoad({ filter: /.*/, namespace: `node_modules:external` }, async (args) => {
 
                 const content = `module.exports = window['${args.path}'];`;
+
+                const externals = JSON.parse(localStorage.getItem('externals') ?? '{}');
+                localStorage.setItem('externals', JSON.stringify({ ...externals, [args.path]: true }));
 
                 return {
                     contents: content,
@@ -86,7 +89,10 @@ export const esBuildConfig = (text: string): BuildOptions => ({
     write: false
 })
 
-esbuild.initialize({ wasmURL: 'esbuild.wasm' }).then(() => {
+// @ts-ignore
+import esWasm from 'esbuild-wasm/esbuild.wasm';
+
+esbuild.initialize({ wasmURL: esWasm }).then(() => {
     ESService.build = async (text: string) => {
         const data = await esbuild.build(esBuildConfig(text));
         data.outputFiles?.forEach((file: any) => {

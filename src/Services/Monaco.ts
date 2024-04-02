@@ -3,7 +3,7 @@ import * as monaco from 'monaco-editor';
 const defaultModelValue = `import React from 'react';
 import ReactDOM from 'react-dom';
 import styled, { createGlobalStyle } from 'styled-components';
-import { HashRouter, Link, Route } from 'react-router-dom';
+import { HashRouter, Link, Route, Routes } from 'react-router-dom';
 
 export const GlobalStyle = createGlobalStyle\`
     html, body, #app {
@@ -14,6 +14,7 @@ export const GlobalStyle = createGlobalStyle\`
         box-sizing: border-box;
     }
 \`;
+
 
 const Container = styled.div\`
     display: flex;
@@ -67,9 +68,11 @@ const App = () => {
                     <StyledLink to="/profile">Profile</StyledLink>
                 </Navbar>
                 <Content>
-                    <Route exact path='/' component={Home} />
-                    <Route path='/about' component={About} />
-                    <Route path='/profile' component={Profile} />
+                    <Routes>
+                        <Route exact path='/' Component={Home} />
+                        <Route path='/about' Component={About} />
+                        <Route path='/profile' Component={Profile} />
+                    </Routes>
                 </Content>
             </Container >
         </HashRouter>
