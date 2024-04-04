@@ -1,15 +1,22 @@
 const path = require("path");
 const webpack = require("webpack");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
-const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
+const MonacoWebpackPlugin = require("monaco-editor-webpack-plugin");
+const CopyPlugin = require("copy-webpack-plugin");
 
 module.exports = {
   mode: "production",
   // devtool: "source-map",
-  entry: ['@babel/polyfill', path.resolve(__dirname, "src/index.tsx")],
+  entry: {
+    app: ["@babel/polyfill", path.resolve(__dirname, "src/index.tsx")],
+    playground: [
+      "@babel/polyfill",
+      path.resolve(__dirname, "src/Components/Playground/script.ts"),
+    ],
+  },
   output: {
     path: path.resolve(__dirname, "dist"),
-    filename: "index.js",
+    filename: "[name].js",
   },
   resolve: {
     extensions: [".ts", ".tsx", ".js", ".jsx", ".css"],
@@ -29,10 +36,10 @@ module.exports = {
         use: ["style-loader", "css-loader"],
       },
       {
-        test: /\.(png|jpe?g|gif|ttf)$/i,
+        test: /\.(png|jpe?g|gif|ttf|wasm)$/i,
         use: [
           {
-            loader: 'file-loader',
+            loader: "file-loader",
           },
         ],
       },
@@ -41,18 +48,32 @@ module.exports = {
   plugins: [
     new HtmlWebpackPlugin({
       template: path.resolve(__dirname, "src/index.ejs"),
+      filename: "index.html",
+      chunks: ["app"],
+    }),
+    new HtmlWebpackPlugin({
+      template: path.resolve(
+        __dirname,
+        "src/Components/Playground/playground.ejs"
+      ),
+      filename: "playground.html",
+      chunks: ["playground"],
     }),
     new webpack.HotModuleReplacementPlugin(),
-    new MonacoWebpackPlugin()
+    new MonacoWebpackPlugin(),
+    new CopyPlugin({
+      patterns: [{ from: "src/assets", to: "" }],
+    }),
   ],
   devServer: {
-    contentBase: path.join(__dirname, 'dist'),
+    static: { directory: path.join(__dirname, "dist") },
     hot: true,
-    quiet: true,
-
+    client: {
+      overlay: false,
+    },
   },
   watchOptions: {
     poll: true,
-    ignored: /node_modules/
-  }
+    ignored: /node_modules/,
+  },
 };

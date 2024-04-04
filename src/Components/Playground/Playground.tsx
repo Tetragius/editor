@@ -10,8 +10,11 @@ export const Playground = () => {
 
     useEffect(() => {
         window.onmessage = ({ data }) => {
-            data = JSON.parse(data);
-            setUrl(data.pathname.replace(baseUrl, '') + data.hash)
+            try {
+                data = JSON.parse(data);
+                setUrl(data.pathname.replace(baseUrl, '') + data.hash)
+            }
+            catch { }
         }
     }, []);
 

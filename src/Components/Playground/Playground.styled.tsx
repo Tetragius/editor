@@ -16,7 +16,8 @@ export const Box = styled.div`
 
 export const Frame = styled.iframe`
     flex-grow: 1;   
-    width: 100%;
+    width: 100%;    
+    box-sizing: border-box;
 `;
 
 export const Navigation = styled.div`
@@ -27,6 +28,7 @@ export const Navigation = styled.div`
     width: 100%;
     min-height: 32px;
     padding: 8px 16px;
+    box-sizing: border-box;
 `;
 
 export const Button = styled.div`
