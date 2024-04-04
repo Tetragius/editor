@@ -78,6 +78,9 @@ const App = () => {
         </HashRouter>
     );
 }
+
+const root = document.getElementById('app');
+ReactDOM.render(<App />, root);
 `
 
 export const Monaco = new class {
